@@ -1,0 +1,29 @@
+name: Update HKO Wind Data
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'   # 每 10 分鐘執行一次
+  workflow_dispatch: {}        # 可在 GitHub 網頁手動觸發
+
+jobs:
+  fetch-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch HKO wind data
+        run: python fetch_wind.py
+
+      - name: Commit updated data
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add wind_data.json
+          git diff --quiet --cached || git commit -m "chore: auto-update wind_data.json [skip ci]"
+          git push

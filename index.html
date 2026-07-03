@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>香港十分鐘平均風向風速</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<style>
+  body { margin:0; padding:0; font-family:sans-serif; background:#1a1a1a; }
+  #map { width:100vw; height:100vh; background:#222; }
+  .custom-wind-icon { text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
+  .arrow { font-size:20px; font-weight:900; color:#58a6ff; text-shadow:0 0 4px #000,0 0 4px #000; line-height:1; }
+  .speed-label { font-size:13px; font-weight:bold; color:#fff; background:rgba(210,36,47,0.85); border-radius:4px; padding:1px 4px; margin-top:-2px; box-shadow:0 2px 4px rgba(0,0,0,0.5); }
+  #statusBar {
+    position:absolute; top:10px; left:50%; transform:translateX(-50%);
+    z-index:1000; background:rgba(0,0,0,0.75); color:#fff; padding:6px 14px;
+    border-radius:6px; font-size:13px; max-width:90vw; text-align:center;
+    pointer-events:none;
+  }
+  #statusBar.error { background:rgba(180,30,30,0.9); }
+  #statusBar.ok    { background:rgba(30,120,60,0.9); }
+</style>
+</head>
+<body>
+<div id="statusBar">資料載入中...</div>
+<div id="map"></div>
+<script>
+// 此版本只讀取同目錄 wind_data.json（同源，無 CORS 問題）
+// 搭配 GitHub Actions 每 10 分鐘自動更新 wind_data.json
+
+const STATION_DATA = {
+  "Hong Kong Observatory": { name:"天文台",       coords:[22.3023,114.1747] },
+  "Kings Park":            { name:"京士柏",       coords:[22.3117,114.1742] },
+  "Wong Chuk Hang":        { name:"黃竹坑",       coords:[22.2481,114.1614] },
+  "Ta Kwu Ling":           { name:"打鼓嶺",       coords:[22.5283,114.1567] },
+  "Lau Fau Shan":          { name:"流浮山",       coords:[22.4686,113.9836] },
+  "Tuen Mun":              { name:"屯門",         coords:[22.3908,113.9725] },
+  "Cheung Chau":           { name:"長洲",         coords:[22.2078,114.0294] },
+  "Chek Lap Kok":          { name:"赤鱲角",       coords:[22.3080,113.9185] },
+  "Tates Cairn":           { name:"大老山",       coords:[22.3564,114.2044] },
+  "Waglan Island":         { name:"橫瀾島",       coords:[22.1819,114.3025] },
+  "Sai Kung":              { name:"西貢",         coords:[22.3814,114.2734] },
+  "Sha Tin":               { name:"沙田",         coords:[22.4025,114.2064] },
+  "Tsing Yi":              { name:"青衣",         coords:[22.3456,114.1044] },
+  "Tai Mei Tuk":           { name:"大美督",       coords:[22.4739,114.2386] },
+  "Tai Mo Shan":           { name:"大帽山",       coords:[22.4106,114.1244] },
+  "Kai Tak":               { name:"啟德",         coords:[22.3119,114.2122] },
+  "Kowloon City":          { name:"九龍城",       coords:[22.3333,114.1833] },
+  "Happy Valley":          { name:"跑馬地",       coords:[22.2707,114.1839] },
+  "Ngong Ping":            { name:"昂坪",         coords:[22.2569,113.9047] },
+  "Peng Chau":             { name:"坪洲",         coords:[22.2833,114.0417] },
+  "Tai Po":                { name:"大埔",         coords:[22.4469,114.1758] },
+  "Tsuen Wan":             { name:"荃灣",         coords:[22.3706,114.1147] },
+  "Tsuen Wan Ho Koon":     { name:"荃灣可觀",     coords:[22.3833,114.1000] },
+  "Tseung Kwan O":         { name:"將軍澳",       coords:[22.3167,114.2500] },
+  "Stanley":               { name:"赤柱",         coords:[22.2178,114.2131] },
+  "Central Pier":          { name:"中環碼頭",     coords:[22.2871,114.1611] },
+  "Star Ferry":            { name:"尖沙咀天星碼頭",coords:[22.2933,114.1683] },
+  "Green Island":          { name:"青洲",         coords:[22.2858,114.1114] },
+  "Tai O":                 { name:"大澳",         coords:[22.2506,113.8611] }
+};
+
+const DIR_DEG = {
+  "N":0,"NNE":22.5,"NE":45,"ENE":67.5,"E":90,"ESE":112.5,
+  "SE":135,"SSE":157.5,"S":180,"SSW":202.5,"SW":225,"WSW":247.5,
+  "W":270,"WNW":292.5,"NW":315,"NNW":337.5
+};
+
+const map = L.map('map').setView([22.35, 114.15], 11);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
+let markerLayer = L.layerGroup().addTo(map);
+const statusBar = document.getElementById('statusBar');
+
+function setStatus(msg, cls) {
+  statusBar.textContent = msg;
+  statusBar.className = cls || '';
+}
+
+function renderData(payload) {
+  markerLayer.clearLayers();
+  let count = 0;
+  for (const rec of payload.records) {
+    const info = STATION_DATA[rec.station];
+    if (!info) continue;
+    const angle = DIR_DEG[rec.direction] !== undefined ? DIR_DEG[rec.direction] : 0;
+    let html;
+    if (rec.direction && rec.direction !== 'VRB') {
+      html = `<div class="arrow" style="transform:rotate(${angle}deg)">↑</div>
+              <div class="speed-label">${rec.speed}</div>`;
+    } else {
+      html = `<div style="width:10px;height:10px;background:#999;border-radius:50%;margin-bottom:2px;"></div>
+              <div class="speed-label" style="background:gray">${rec.speed || 0}</div>`;
+    }
+    const icon = L.divIcon({ className:'custom-wind-icon', html, iconSize:[40,40], iconAnchor:[20,20] });
+    L.marker(info.coords, { icon }).addTo(markerLayer)
+      .bindPopup(`<div style="color:#000"><b>${info.name} (${rec.station})</b><br>
+        風向: ${rec.direction}<br>風速: ${rec.speed} km/h<br>陣風: ${rec.gust} km/h</div>`);
+    count++;
+  }
+  setStatus(`已更新 ${count} 個站點（資料時間: ${payload.updated_at}）`, 'ok');
+}
+
+async function loadData() {
+  try {
+    const res = await fetch('wind_data.json?_=' + Date.now(), { cache:'no-store' });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    renderData(await res.json());
+  } catch (e) {
+    setStatus('讀取失敗: ' + e.message + '（wind_data.json 是否已由 GitHub Actions 產生?）', 'error');
+  }
+}
+
+loadData();
+setInterval(loadData, 60 * 1000); // 每分鐘刷新一次畫面
+</script>
+</body>
+</html>

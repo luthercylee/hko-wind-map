@@ -105,7 +105,6 @@ function resolveAngle(rawDirection) {
 }
 
 // 按香港天文台蒲福氏風級術語，以十分鐘平均風速（km/h）分級並配色
-// 正常 <41 綠、強風 41-62 黃、烈風 63-87 橙、暴風 88-117 紅、颶風 >=118 紫
 function classifySpeed(speedStr) {
   const speed = parseFloat(speedStr);
   if (isNaN(speed)) return { level: '無資料', color: '#999999' };
@@ -131,22 +130,32 @@ function renderData(payload) {
   let count = 0;
   for (const rec of payload.records) {
     const info = STATION_DATA[rec.station];
-    if (!info) continue;
+    if (!info) {
+      console.warn(`找不到測站坐標資料: ${rec.station}`);
+      continue;
+    }
 
     const angle = resolveAngle(rec.direction);
     const cls = classifySpeed(rec.speed);
     let html;
+    
     if (angle !== null) {
-      html = `<div class="arrow" style="transform:rotate(${angle}deg);color:${cls.color}">↑</div>
+      // 修正邏輯：氣象風向為風的來向，箭頭應旋轉 180 度指向風吹去的方向
+      const visualAngle = (angle + 180) % 360;
+      html = `<div class="arrow" style="transform:rotate(${visualAngle}deg);color:${cls.color}">↑</div>
               <div class="speed-label" style="background:${cls.color}">${rec.speed}</div>`;
     } else {
       html = `<div style="width:10px;height:10px;background:${cls.color};border-radius:50%;margin-bottom:2px;"></div>
               <div class="speed-label" style="background:${cls.color}">${rec.speed || 0}</div>`;
     }
+    
+    // 優化防錯：處理陣風資料可能缺失的情況
+    const gustText = (rec.gust !== undefined && rec.gust !== null) ? `${rec.gust} km/h` : '無資料';
+
     const icon = L.divIcon({ className:'custom-wind-icon', html, iconSize:[40,40], iconAnchor:[20,20] });
     L.marker(info.coords, { icon }).addTo(markerLayer)
       .bindPopup(`<div style="color:#000"><b>${info.name} (${rec.station})</b><br>
-        風向: ${rec.direction}<br>風速: ${rec.speed} km/h（${cls.level}）<br>陣風: ${rec.gust} km/h</div>`);
+        風向: ${rec.direction}<br>風速: ${rec.speed} km/h（${cls.level}）<br>陣風: ${gustText}</div>`);
     count++;
   }
   setStatus(`已更新 ${count} 個站點（資料時間: ${payload.updated_at}）`, 'ok');

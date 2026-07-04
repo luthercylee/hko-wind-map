@@ -26,9 +26,6 @@
 <div id="statusBar">資料載入中...</div>
 <div id="map"></div>
 <script>
-// 此版本只讀取同目錄 wind_data.json（同源，無 CORS 問題）
-// 搭配 GitHub Actions 每 10 分鐘自動更新 wind_data.json
-
 const STATION_DATA = {
   "Hong Kong Observatory": { name:"天文台",       coords:[22.3023,114.1747] },
   "Kings Park":            { name:"京士柏",       coords:[22.3117,114.1742] },
@@ -67,6 +64,25 @@ const DIR_DEG = {
   "W":270,"WNW":292.5,"NW":315,"NNW":337.5
 };
 
+// ★ 修正重點：統一處理「文字方位」和「數字角度」兩種格式，
+//    並把大小寫、空白都標準化，避免 DIR_DEG 對照不到而全部變成 0 度（指北）。
+function resolveAngle(rawDirection) {
+  if (rawDirection === undefined || rawDirection === null) return 0;
+  const cleaned = String(rawDirection).trim().toUpperCase();
+  if (cleaned === '' || cleaned === 'VRB') return null; // 風向不定，不畫箭頭
+  // 情況一：本身就是數字角度，例如 "90"、"045"
+  if (/^\d+(\.\d+)?$/.test(cleaned)) {
+    return parseFloat(cleaned) % 360;
+  }
+  // 情況二：文字方位，例如 "N"、"NNE"
+  if (DIR_DEG[cleaned] !== undefined) {
+    return DIR_DEG[cleaned];
+  }
+  // 都對不上，記錄下來方便除錯，先當 0 度處理
+  console.warn('無法辨識的風向字串:', rawDirection);
+  return 0;
+}
+
 const map = L.map('map').setView([22.35, 114.15], 11);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
 let markerLayer = L.layerGroup().addTo(map);
@@ -83,9 +99,10 @@ function renderData(payload) {
   for (const rec of payload.records) {
     const info = STATION_DATA[rec.station];
     if (!info) continue;
-    const angle = DIR_DEG[rec.direction] !== undefined ? DIR_DEG[rec.direction] : 0;
+
+    const angle = resolveAngle(rec.direction); // null = 風向不定
     let html;
-    if (rec.direction && rec.direction !== 'VRB') {
+    if (angle !== null) {
       html = `<div class="arrow" style="transform:rotate(${angle}deg)">↑</div>
               <div class="speed-label">${rec.speed}</div>`;
     } else {
@@ -112,7 +129,7 @@ async function loadData() {
 }
 
 loadData();
-setInterval(loadData, 60 * 1000); // 每分鐘刷新一次畫面
+setInterval(loadData, 60 * 1000);
 </script>
 </body>
 </html>

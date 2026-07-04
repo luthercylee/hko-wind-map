@@ -58,27 +58,46 @@ const STATION_DATA = {
   "Tai O":                 { name:"大澳",         coords:[22.2506,113.8611] }
 };
 
+// 同時支援縮寫（N/NE/SE...）與完整英文單字（North/Northeast/Southeast...），
+// 因為 HKO 實際回傳的是完整英文單字，例如 "Southeast"、"South"、"East"。
 const DIR_DEG = {
-  "N":0,"NNE":22.5,"NE":45,"ENE":67.5,"E":90,"ESE":112.5,
-  "SE":135,"SSE":157.5,"S":180,"SSW":202.5,"SW":225,"WSW":247.5,
-  "W":270,"WNW":292.5,"NW":315,"NNW":337.5
+  "N":0, "NORTH":0,
+  "NNE":22.5, "NORTHNORTHEAST":22.5,
+  "NE":45, "NORTHEAST":45,
+  "ENE":67.5, "EASTNORTHEAST":67.5,
+  "E":90, "EAST":90,
+  "ESE":112.5, "EASTSOUTHEAST":112.5,
+  "SE":135, "SOUTHEAST":135,
+  "SSE":157.5, "SOUTHSOUTHEAST":157.5,
+  "S":180, "SOUTH":180,
+  "SSW":202.5, "SOUTHSOUTHWEST":202.5,
+  "SW":225, "SOUTHWEST":225,
+  "WSW":247.5, "WESTSOUTHWEST":247.5,
+  "W":270, "WEST":270,
+  "WNW":292.5, "WESTNORTHWEST":292.5,
+  "NW":315, "NORTHWEST":315,
+  "NNW":337.5, "NORTHNORTHWEST":337.5
 };
 
-// ★ 修正重點：統一處理「文字方位」和「數字角度」兩種格式，
-//    並把大小寫、空白都標準化，避免 DIR_DEG 對照不到而全部變成 0 度（指北）。
+// 統一處理「文字方位（含全名/縮寫）」和「數字角度」，
+// 並把大小寫、空白標準化，避免對照不到而全部變成 0 度（指北）。
 function resolveAngle(rawDirection) {
   if (rawDirection === undefined || rawDirection === null) return 0;
   const cleaned = String(rawDirection).trim().toUpperCase();
-  if (cleaned === '' || cleaned === 'VRB') return null; // 風向不定，不畫箭頭
-  // 情況一：本身就是數字角度，例如 "90"、"045"
+
+  // 風向不定：VRB（縮寫）或 VARIABLE（全名）都視為不定
+  if (cleaned === '' || cleaned === 'VRB' || cleaned === 'VARIABLE') return null;
+
+  // 數字角度，例如 "90"、"045"
   if (/^\d+(\.\d+)?$/.test(cleaned)) {
     return parseFloat(cleaned) % 360;
   }
-  // 情況二：文字方位，例如 "N"、"NNE"
+
+  // 文字方位（含全名與縮寫）
   if (DIR_DEG[cleaned] !== undefined) {
     return DIR_DEG[cleaned];
   }
-  // 都對不上，記錄下來方便除錯，先當 0 度處理
+
   console.warn('無法辨識的風向字串:', rawDirection);
   return 0;
 }

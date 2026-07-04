@@ -10,8 +10,8 @@
   body { margin:0; padding:0; font-family:sans-serif; background:#1a1a1a; }
   #map { width:100vw; height:100vh; background:#222; }
   .custom-wind-icon { text-align:center; display:flex; flex-direction:column; align-items:center; justify-content:center; pointer-events:none; }
-  .arrow { font-size:20px; font-weight:900; color:#58a6ff; text-shadow:0 0 4px #000,0 0 4px #000; line-height:1; }
-  .speed-label { font-size:13px; font-weight:bold; color:#fff; background:rgba(210,36,47,0.85); border-radius:4px; padding:1px 4px; margin-top:-2px; box-shadow:0 2px 4px rgba(0,0,0,0.5); }
+  .arrow { font-size:22px; font-weight:900; text-shadow:0 0 4px #000,0 0 4px #000; line-height:1; }
+  .speed-label { font-size:13px; font-weight:bold; color:#fff; border-radius:4px; padding:1px 4px; margin-top:-2px; box-shadow:0 2px 4px rgba(0,0,0,0.5); }
   #statusBar {
     position:absolute; top:10px; left:50%; transform:translateX(-50%);
     z-index:1000; background:rgba(0,0,0,0.75); color:#fff; padding:6px 14px;
@@ -20,11 +20,24 @@
   }
   #statusBar.error { background:rgba(180,30,30,0.9); }
   #statusBar.ok    { background:rgba(30,120,60,0.9); }
+  #legend {
+    position:absolute; bottom:10px; right:10px; z-index:1000;
+    background:rgba(0,0,0,0.75); color:#fff; padding:10px 14px;
+    border-radius:8px; font-size:12px; line-height:1.8;
+  }
+  #legend .dot { display:inline-block; width:10px; height:10px; border-radius:50%; margin-right:6px; }
 </style>
 </head>
 <body>
 <div id="statusBar">資料載入中...</div>
 <div id="map"></div>
+<div id="legend">
+  <div><span class="dot" style="background:#4caf50"></span>正常 (&lt;41 km/h)</div>
+  <div><span class="dot" style="background:#ffd600"></span>強風 (41-62 km/h)</div>
+  <div><span class="dot" style="background:#ff9800"></span>烈風 (63-87 km/h)</div>
+  <div><span class="dot" style="background:#f44336"></span>暴風 (88-117 km/h)</div>
+  <div><span class="dot" style="background:#e040fb"></span>颶風 (&ge;118 km/h)</div>
+</div>
 <script>
 const STATION_DATA = {
   "Hong Kong Observatory": { name:"天文台",       coords:[22.3023,114.1747] },
@@ -58,8 +71,6 @@ const STATION_DATA = {
   "Tai O":                 { name:"大澳",         coords:[22.2506,113.8611] }
 };
 
-// 同時支援縮寫（N/NE/SE...）與完整英文單字（North/Northeast/Southeast...），
-// 因為 HKO 實際回傳的是完整英文單字，例如 "Southeast"、"South"、"East"。
 const DIR_DEG = {
   "N":0, "NORTH":0,
   "NNE":22.5, "NORTHNORTHEAST":22.5,
@@ -79,27 +90,30 @@ const DIR_DEG = {
   "NNW":337.5, "NORTHNORTHWEST":337.5
 };
 
-// 統一處理「文字方位（含全名/縮寫）」和「數字角度」，
-// 並把大小寫、空白標準化，避免對照不到而全部變成 0 度（指北）。
 function resolveAngle(rawDirection) {
   if (rawDirection === undefined || rawDirection === null) return 0;
   const cleaned = String(rawDirection).trim().toUpperCase();
-
-  // 風向不定：VRB（縮寫）或 VARIABLE（全名）都視為不定
   if (cleaned === '' || cleaned === 'VRB' || cleaned === 'VARIABLE') return null;
-
-  // 數字角度，例如 "90"、"045"
   if (/^\d+(\.\d+)?$/.test(cleaned)) {
     return parseFloat(cleaned) % 360;
   }
-
-  // 文字方位（含全名與縮寫）
   if (DIR_DEG[cleaned] !== undefined) {
     return DIR_DEG[cleaned];
   }
-
   console.warn('無法辨識的風向字串:', rawDirection);
   return 0;
+}
+
+// 按香港天文台蒲福氏風級術語，以十分鐘平均風速（km/h）分級並配色
+// 正常 <41 綠、強風 41-62 黃、烈風 63-87 橙、暴風 88-117 紅、颶風 >=118 紫
+function classifySpeed(speedStr) {
+  const speed = parseFloat(speedStr);
+  if (isNaN(speed)) return { level: '無資料', color: '#999999' };
+  if (speed < 41)  return { level: '正常', color: '#4caf50' };
+  if (speed < 63)  return { level: '強風', color: '#ffd600' };
+  if (speed < 88)  return { level: '烈風', color: '#ff9800' };
+  if (speed < 118) return { level: '暴風', color: '#f44336' };
+  return { level: '颶風', color: '#e040fb' };
 }
 
 const map = L.map('map').setView([22.35, 114.15], 11);
@@ -119,19 +133,20 @@ function renderData(payload) {
     const info = STATION_DATA[rec.station];
     if (!info) continue;
 
-    const angle = resolveAngle(rec.direction); // null = 風向不定
+    const angle = resolveAngle(rec.direction);
+    const cls = classifySpeed(rec.speed);
     let html;
     if (angle !== null) {
-      html = `<div class="arrow" style="transform:rotate(${angle}deg)">↑</div>
-              <div class="speed-label">${rec.speed}</div>`;
+      html = `<div class="arrow" style="transform:rotate(${angle}deg);color:${cls.color}">↑</div>
+              <div class="speed-label" style="background:${cls.color}">${rec.speed}</div>`;
     } else {
-      html = `<div style="width:10px;height:10px;background:#999;border-radius:50%;margin-bottom:2px;"></div>
-              <div class="speed-label" style="background:gray">${rec.speed || 0}</div>`;
+      html = `<div style="width:10px;height:10px;background:${cls.color};border-radius:50%;margin-bottom:2px;"></div>
+              <div class="speed-label" style="background:${cls.color}">${rec.speed || 0}</div>`;
     }
     const icon = L.divIcon({ className:'custom-wind-icon', html, iconSize:[40,40], iconAnchor:[20,20] });
     L.marker(info.coords, { icon }).addTo(markerLayer)
       .bindPopup(`<div style="color:#000"><b>${info.name} (${rec.station})</b><br>
-        風向: ${rec.direction}<br>風速: ${rec.speed} km/h<br>陣風: ${rec.gust} km/h</div>`);
+        風向: ${rec.direction}<br>風速: ${rec.speed} km/h（${cls.level}）<br>陣風: ${rec.gust} km/h</div>`);
     count++;
   }
   setStatus(`已更新 ${count} 個站點（資料時間: ${payload.updated_at}）`, 'ok');

@@ -1,125 +1,125 @@
 {
-  "updated_at": "2026-07-16 00:10:12",
+  "updated_at": "2026-07-16 07:48:46",
   "records": [
     {
       "station": "Central Pier",
-      "direction": "Southeast",
-      "speed": "7",
-      "gust": "15"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "1"
     },
     {
       "station": "Chek Lap Kok",
-      "direction": "East",
-      "speed": "12",
-      "gust": "16"
+      "direction": "South",
+      "speed": "8",
+      "gust": "11"
     },
     {
       "station": "Cheung Chau",
-      "direction": "Southeast",
-      "speed": "40",
-      "gust": "58"
+      "direction": "Southwest",
+      "speed": "7",
+      "gust": "9"
     },
     {
       "station": "Cheung Chau Beach",
-      "direction": "South",
-      "speed": "19",
-      "gust": "38"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "0"
     },
     {
       "station": "Green Island",
-      "direction": "South",
-      "speed": "40",
-      "gust": "55"
+      "direction": "North",
+      "speed": "12",
+      "gust": "15"
     },
     {
       "station": "Hong Kong Sea School",
       "direction": "Southeast",
-      "speed": "5",
-      "gust": "19"
+      "speed": "1",
+      "gust": "6"
     },
     {
       "station": "Kai Tak",
-      "direction": "Southeast",
-      "speed": "10",
-      "gust": "16"
+      "direction": "Northwest",
+      "speed": "6",
+      "gust": "9"
     },
     {
       "station": "King's Park",
-      "direction": "Northeast",
-      "speed": "7",
-      "gust": "12"
+      "direction": "West",
+      "speed": "2",
+      "gust": "8"
     },
     {
       "station": "Lamma Island",
-      "direction": "Southeast",
-      "speed": "13",
-      "gust": "27"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "0"
     },
     {
       "station": "Lau Fau Shan",
-      "direction": "South",
-      "speed": "10",
-      "gust": "15"
+      "direction": "Southeast",
+      "speed": "5",
+      "gust": "9"
     },
     {
       "station": "Ngong Ping",
-      "direction": "Southwest",
-      "speed": "61",
-      "gust": "80"
+      "direction": "West",
+      "speed": "26",
+      "gust": "32"
     },
     {
       "station": "North Point",
-      "direction": "Northeast",
-      "speed": "7",
-      "gust": "18"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "0"
     },
     {
       "station": "Peng Chau",
-      "direction": "Southwest",
-      "speed": "10",
-      "gust": "20"
+      "direction": "Northeast",
+      "speed": "9",
+      "gust": "12"
     },
     {
       "station": "Sai Kung",
-      "direction": "Northwest",
-      "speed": "6",
-      "gust": "14"
+      "direction": "North",
+      "speed": "3",
+      "gust": "8"
     },
     {
       "station": "Sha Chau",
-      "direction": "Variable",
-      "speed": "5",
-      "gust": "10"
+      "direction": "South",
+      "speed": "6",
+      "gust": "9"
     },
     {
       "station": "Sha Tin",
-      "direction": "West",
+      "direction": "Southeast",
       "speed": "4",
-      "gust": "7"
+      "gust": "8"
     },
     {
       "station": "Shek Kong",
-      "direction": "Variable",
-      "speed": "1",
-      "gust": "4"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "1"
     },
     {
       "station": "Stanley",
-      "direction": "Southwest",
-      "speed": "17",
-      "gust": "26"
+      "direction": "North",
+      "speed": "8",
+      "gust": "11"
     },
     {
       "station": "Star Ferry",
-      "direction": "Southeast",
-      "speed": "8",
-      "gust": "22"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "0"
     },
     {
       "station": "Ta Kwu Ling",
-      "direction": "Southwest",
-      "speed": "3",
-      "gust": "7"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "2"
     },
     {
       "station": "Tai Mei Tuk",
@@ -129,57 +129,57 @@
     },
     {
       "station": "Tai Po Kau",
-      "direction": "Southeast",
+      "direction": "Northeast",
       "speed": "6",
-      "gust": "12"
+      "gust": "8"
     },
     {
       "station": "Tap Mun",
-      "direction": "Southwest",
-      "speed": "6",
-      "gust": "14"
+      "direction": "Southeast",
+      "speed": "1",
+      "gust": "4"
     },
     {
       "station": "Tate's Cairn",
       "direction": "Southwest",
-      "speed": "5",
-      "gust": "16"
-    },
-    {
-      "station": "Tseung Kwan O",
-      "direction": "South",
-      "speed": "10",
-      "gust": "17"
-    },
-    {
-      "station": "Tsing Yi",
-      "direction": "Variable",
-      "speed": "6",
-      "gust": "20"
-    },
-    {
-      "station": "Tuen Mun",
-      "direction": "West",
-      "speed": "2",
-      "gust": "10"
-    },
-    {
-      "station": "Waglan Island",
-      "direction": "South",
       "speed": "27",
       "gust": "33"
     },
     {
+      "station": "Tseung Kwan O",
+      "direction": "West",
+      "speed": "1",
+      "gust": "4"
+    },
+    {
+      "station": "Tsing Yi",
+      "direction": "North",
+      "speed": "4",
+      "gust": "10"
+    },
+    {
+      "station": "Tuen Mun",
+      "direction": "Southeast",
+      "speed": "6",
+      "gust": "9"
+    },
+    {
+      "station": "Waglan Island",
+      "direction": "Northwest",
+      "speed": "14",
+      "gust": "20"
+    },
+    {
       "station": "Wetland Park",
-      "direction": "South",
-      "speed": "3",
-      "gust": "8"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "1"
     },
     {
       "station": "Wong Chuk Hang",
-      "direction": "North",
-      "speed": "8",
-      "gust": "19"
+      "direction": "East",
+      "speed": "1",
+      "gust": "4"
     }
   ]
 }

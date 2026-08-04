@@ -1,41 +1,41 @@
 {
-  "updated_at": "2026-08-04 17:58:03",
+  "updated_at": "2026-08-04 19:48:43",
   "records": [
     {
       "station": "Central Pier",
       "direction": "Calm",
       "speed": "Calm",
-      "gust": "0"
+      "gust": "4"
     },
     {
       "station": "Chek Lap Kok",
       "direction": "East",
-      "speed": "11",
-      "gust": "14"
-    },
-    {
-      "station": "Cheung Chau",
-      "direction": "East",
-      "speed": "10",
+      "speed": "9",
       "gust": "12"
     },
     {
-      "station": "Cheung Chau Beach",
-      "direction": "Variable",
-      "speed": "1",
-      "gust": "6"
+      "station": "Cheung Chau",
+      "direction": "Northeast",
+      "speed": "6",
+      "gust": "9"
     },
     {
-      "station": "Green Island",
-      "direction": "East",
-      "speed": "3",
+      "station": "Cheung Chau Beach",
+      "direction": "Northeast",
+      "speed": "1",
       "gust": "5"
     },
     {
-      "station": "Hong Kong Sea School",
+      "station": "Green Island",
       "direction": "North",
-      "speed": "2",
-      "gust": "4"
+      "speed": "5",
+      "gust": "6"
+    },
+    {
+      "station": "Hong Kong Sea School",
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "3"
     },
     {
       "station": "Kai Tak",
@@ -45,21 +45,21 @@
     },
     {
       "station": "King's Park",
-      "direction": "South",
+      "direction": "East",
       "speed": "3",
       "gust": "5"
     },
     {
       "station": "Lamma Island",
-      "direction": "Variable",
-      "speed": "1",
-      "gust": "9"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "3"
     },
     {
       "station": "Lau Fau Shan",
-      "direction": "Southeast",
-      "speed": "6",
-      "gust": "9"
+      "direction": "East",
+      "speed": "9",
+      "gust": "12"
     },
     {
       "station": "Ngong Ping",
@@ -75,27 +75,27 @@
     },
     {
       "station": "Peng Chau",
-      "direction": "Calm",
-      "speed": "Calm",
-      "gust": "2"
+      "direction": "West",
+      "speed": "3",
+      "gust": "4"
     },
     {
       "station": "Sai Kung",
-      "direction": "Northeast",
-      "speed": "1",
-      "gust": "3"
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "1"
     },
     {
       "station": "Sha Chau",
       "direction": "North",
-      "speed": "9",
+      "speed": "8",
       "gust": "12"
     },
     {
       "station": "Sha Tin",
-      "direction": "Calm",
-      "speed": "Calm",
-      "gust": "2"
+      "direction": "Northeast",
+      "speed": "1",
+      "gust": "3"
     },
     {
       "station": "Shek Kong",
@@ -106,8 +106,8 @@
     {
       "station": "Stanley",
       "direction": "East",
-      "speed": "8",
-      "gust": "9"
+      "speed": "10",
+      "gust": "12"
     },
     {
       "station": "Star Ferry",
@@ -117,27 +117,27 @@
     },
     {
       "station": "Ta Kwu Ling",
-      "direction": "Southeast",
-      "speed": "4",
-      "gust": "6"
-    },
-    {
-      "station": "Tai Mei Tuk",
-      "direction": "Calm",
-      "speed": "Calm",
-      "gust": "0"
-    },
-    {
-      "station": "Tai Po Kau",
       "direction": "Calm",
       "speed": "Calm",
       "gust": "1"
     },
     {
+      "station": "Tai Mei Tuk",
+      "direction": "Northeast",
+      "speed": "5",
+      "gust": "8"
+    },
+    {
+      "station": "Tai Po Kau",
+      "direction": "Northeast",
+      "speed": "1",
+      "gust": "4"
+    },
+    {
       "station": "Tap Mun",
-      "direction": "West",
-      "speed": "7",
-      "gust": "9"
+      "direction": "Northwest",
+      "speed": "1",
+      "gust": "3"
     },
     {
       "station": "Tate's Cairn",
@@ -147,19 +147,19 @@
     },
     {
       "station": "Tseung Kwan O",
-      "direction": "Northwest",
-      "speed": "3",
-      "gust": "6"
-    },
-    {
-      "station": "Tsing Yi",
-      "direction": "Southeast",
+      "direction": "North",
       "speed": "1",
       "gust": "3"
     },
     {
+      "station": "Tsing Yi",
+      "direction": "Calm",
+      "speed": "Calm",
+      "gust": "0"
+    },
+    {
       "station": "Tuen Mun",
-      "direction": "Southeast",
+      "direction": "North",
       "speed": "2",
       "gust": "5"
     },
@@ -179,7 +179,7 @@
       "station": "Wong Chuk Hang",
       "direction": "Calm",
       "speed": "Calm",
-      "gust": "1"
+      "gust": "0"
     }
   ]
 }
